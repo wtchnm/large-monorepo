@@ -44,9 +44,9 @@ if (noDaemon) {
 }
 
 message('prepping turbo');
-let turboArgs = ['run', 'build', `--concurrency=10`]
+let turboArgs = ['run', 'build', `--concurrency`, 10];
 if (noDaemon) {
-  turboArgs.push('--no-daemon')
+  turboArgs.push('--no-daemon');
 }
 spawnSync('turbo', turboArgs);
 
@@ -54,11 +54,12 @@ message(`running turbo ${NUMBER_OF_RUNS} times`);
 let turboTime = 0;
 for (let i = 0; i < NUMBER_OF_RUNS; ++i) {
   cleanFolders();
-  const b = new Date();
+  const b = process.hrtime.bigint();
   spawnSync('turbo', turboArgs);
-  const a = new Date();
-  turboTime += a.getTime() - b.getTime();
-  console.log(`The command ran in ${a.getTime() - b.getTime()}ms`);
+  const a = process.hrtime.bigint();
+  const diff = Number((a - b) / BigInt(1000000));
+  turboTime += diff;
+  console.log(`The command ran in ${diff}ms`);
 }
 const averageTurboTime = turboTime / NUMBER_OF_RUNS;
 
@@ -69,29 +70,30 @@ message(`running nx ${NUMBER_OF_RUNS} times`);
 let nxTime = 0;
 for (let i = 0; i < NUMBER_OF_RUNS; ++i) {
   cleanFolders();
-  const b = new Date();
+  const b = process.hrtime.bigint();
   spawnSync('nx', ['run-many', '-t', 'build', '--parallel', 10]);
-  const a = new Date();
-  nxTime += a.getTime() - b.getTime();
-  console.log(`The command ran in ${a.getTime() - b.getTime()}ms`);
+  const a = process.hrtime.bigint();
+  const diff = Number((a - b) / BigInt(1000000));
+  nxTime += diff;
+  console.log(`The command ran in ${diff}ms`);
 }
 const averageNxTime = nxTime / NUMBER_OF_RUNS;
 
 message('prepping lage');
-spawnSync('lage', ['build', '--concurrency', 3]);
+spawnSync('lage', ['build', '--concurrency', 10]);
 
 message(`running lage ${NUMBER_OF_RUNS} times`);
 let lageTime = 0;
 for (let i = 0; i < NUMBER_OF_RUNS; ++i) {
   cleanFolders();
-  const b = new Date();
+  const b = process.hrtime.bigint();
   spawnSync('lage', ['build', '--concurrency', 10]);
-  const a = new Date();
-  lageTime += a.getTime() - b.getTime();
-  console.log(`The command ran in ${a.getTime() - b.getTime()}ms`);
+  const a = process.hrtime.bigint();
+  const diff = Number((a - b) / BigInt(1000000));
+  lageTime += diff;
+  console.log(`The command ran in ${diff}ms`);
 }
-const averageLageTime =
-    lageTime / NUMBER_OF_RUNS;
+const averageLageTime = lageTime / NUMBER_OF_RUNS;
 
 message('results');
 console.log(`average lage time is: ${averageLageTime}`);

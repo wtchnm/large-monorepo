@@ -17,22 +17,33 @@ ordinary. And, the bigger the repo, the bigger the difference in performance bet
 The repo has Nx, Turbo, and Lage enabled. They don't affect each other. You can remove one without affecting the
 other one.
 
-## Benchmark & Results (May 1)
+## Benchmark & Results (Set 2024)
 
-`npm run benchmark` runs the benchmark. The following numbers produced by an M1Max MBP on macOS 13 (Ventura). On a Windows machine all the tools will get slower, and the delta between Nx and Turbo/Lage will get bigger.
+`npm run benchmark` runs the benchmark. The following numbers produced by an M1Pro MBP on macOS 14 (Sonoma). On a Windows machine all the tools will get slower, and the delta between Nx and Turbo/Lage will get bigger.
 
-- **average turbo time is: 633.1**
-- **average lage time is: 395.7**
-- **average nx time is: 153.0**
-- **nx is 2.58x faster than lage**
-- **nx is 4.13x faster than turbo**
+- **average turbo time is: 1364.1**
+- **average lage time is: 2119.7**
+- **average nx time is: 251.5**
+- **nx is 5.42x faster than lage**
+- **nx is 8.42x faster than turbo**
+
+### No daemon
+
+Another performance mark that we're going to start tracking is commands run without their respective daemon. This would represent running the tools in an CI environment.
+These can be run with `npm run benchmark-no-daemon`
+
+- **average turbo time is: 1338.5**
+- **average lage time is: 2122.3**
+- **average nx time is: 1320.8**
+- **nx is 1.01x faster than lage**
+- **nx is 1.60x faster than turbo**
 
 ### Why is Nx faster than Turbo
 
 Nx uses several optimizations to minimize the amount of computation required. For instance, it stores information about
 the repository on disk to be able to recompute only what is needed. It runs a daemon process that gets all the necessary
 data structures ready before the developer invokes a command. And the data structures are updated incrementally, usually
-in just a few milliseconds. 
+in just a few milliseconds.
 
 Although Nx plugins use Node.js, the performance sensitive parts of Nx are written in Rust.
 
@@ -53,7 +64,7 @@ Run `nx build crew --skip-nx-cache` and `turbo run build --scope=crew --force`:
 
 ![terminal outputs](./readme-assets/turbo-nx-terminal.gif)
 
-Nx doesn't change your terminal output. Spinners, animations, colors are the same whether you use Nx or not. 
+Nx doesn't change your terminal output. Spinners, animations, colors are the same whether you use Nx or not.
 What is also important is that when you restore things from cache, Nx will
 replay the terminal output identical to the one you would have had you run the command.
 
